@@ -1,0 +1,25 @@
+{% extends 'agenda/base.html' %}
+
+{% block content %}
+<div>
+    
+    
+    {% if not user.is_authenticated %}
+    <p>Ola forasteriro</p>
+    {% if request.GET.msg %}
+        <p>{{ request.GET.msg }}</p><!--pegar query string na template-->
+    {% endif %}
+    <a href="{% url 'agenda:login' %}">login</a>
+    <a href="{% url 'agenda:sign' %}">sign</a>
+    <!--
+        caso eu queira passa uma query string por dentro
+        na url
+        {# <a href="{% url my_videos %}?filter=others&sort=newest">My Videos</a>#}
+    -->
+    {% else %}
+    <p>Ola {{ user }}</p>
+    {% endif %}
+    
+    
+</div>
+{% endblock %}

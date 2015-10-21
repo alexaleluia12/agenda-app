@@ -1,0 +1,17 @@
+{% extends 'agenda/base.html' %}
+
+{% block content %}
+
+<div>
+    <p>Contact{{ len|pluralize }}</p>
+    <ul>
+            
+        {% for contact in user.contact_set.all %}
+            <li>{{ contact.name }}</li>
+        {% endfor %}
+    </ul>
+    
+</div>
+
+{% endblock %}
+

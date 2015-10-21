@@ -1,0 +1,17 @@
+{% extends 'agenda/base.html' %}
+
+{% block content %}
+<div>
+    {% if msg %}
+        <p>{{ msg }}</p>
+    {% endif %}
+    {% if form %}
+    <form action="{% url 'agenda:sign' %}" method="POST">{% csrf_token %}
+      
+      {{ form.as_p }}
+        <p><input type="submit" value="Enviar &rarr;" /></p>
+    </form>
+    {% endif %}
+    
+</div>
+{% endblock %}
