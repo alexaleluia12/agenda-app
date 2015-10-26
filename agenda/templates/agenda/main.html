@@ -5,9 +5,13 @@
 <div>
     <p>Contact{{ len|pluralize }}</p>
     <ul>
-            
-        {% for contact in user.contact_set.all %}
-            <li>{{ contact.name }}</li>
+            <p>nome &nbsp &nbsp &nbsp &nbsp  phone</p>
+        {% for c,p in contacts_phones_lst %}
+            <li>{{ c }} &nbsp|&nbsp 
+                {% if p %}
+                    {{ p }}
+                {% endif %}
+            </li>
         {% endfor %}
     </ul>
     

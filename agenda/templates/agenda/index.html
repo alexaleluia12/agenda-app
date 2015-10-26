@@ -5,7 +5,8 @@
     
     
     {% if not user.is_authenticated %}
-    <p>Ola forasteriro</p>
+    <p>Ola forasteiro</p>
+    {% endif %}
     {% if request.GET.msg %}
         <p>{{ request.GET.msg }}</p><!--pegar query string na template-->
     {% endif %}
@@ -16,9 +17,6 @@
         na url
         {# <a href="{% url my_videos %}?filter=others&sort=newest">My Videos</a>#}
     -->
-    {% else %}
-    <p>Ola {{ user }}</p>
-    {% endif %}
     
     
 </div>

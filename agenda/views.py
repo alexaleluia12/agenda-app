@@ -16,7 +16,7 @@ query orm
 >>> p.username
 'pedro'
 >>> p.user
-p.user_permissions(  p.username           
+p.user_permissions(  p.username
 >>> p.contact_set.all()
 [<Contact: hulke>]
 >>> p.contact_set.creat
@@ -29,9 +29,20 @@ p.contact_set.create(           p.contact_set.creation_counter
 >>> c
 <Contact: teclado>
 >>> c.phone_set.all()
-[]
+
+==
+>>> p = User.objects.all()[1]
+>>> p
+<User: pedro>
+>>> p.contact_set.all()
+[<Contact: hulke>, <Contact: pano azul>, <Contact: teclado>]
+>>> p.contact_set.first()
+>>> p.contact_set.first().phone_set.all()
+[<Phone: 4444-4444>, <Phone: 5555-5555>]
+>>> p.contact_set.first().phone_set.first()
+<Phone: 4444-4444>
 >>> 
->>>
+
 """
 
 
@@ -39,16 +50,30 @@ title = 'agenda'
 default_dict_to_render = {}
 default_dict_to_render['title'] = title
 
+# tenho que mostrar o telefone tmb
+
 @decorators.login_required(login_url='/agenda/login/')
 def main(request):
     contacts_lst = request.user.contact_set.all()
-    dict_render = {'len': len(contacts_lst), 'title': request.user.username}
+    phones_lst = [
+       i.phone_set.first() if i.phone_set.first() else '#'
+       for i in request.user.contact_set.all()
+    ]
+    dict_render = {
+        'len': len(contacts_lst)
+      , 'title': request.user.username
+      , 'contacts_phones_lst': zip(contacts_lst, phones_lst)
+      , 'contacts_lst': contacts_lst
+      , 'phones_lst': phones_lst
+    }
     page = 'agenda/main.html'
     
     return render(request, page, dict_render)
 
 
 def home(request):
+    if request.user.is_authenticated():
+        return redirect(reverse('agenda:main'))
     return render(request, 'agenda/index.html', default_dict_to_render)
 
 def sign(request):
