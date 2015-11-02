@@ -8,6 +8,7 @@
     {% if user.is_authenticated %}
         <a href="{% url 'agenda:logout' %}">sair</a>
     {% endif %}
+    <a href="{% url 'agenda:home' %}">home</a>
     
     {% block content %}
     {% endblock %}

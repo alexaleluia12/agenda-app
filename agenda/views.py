@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.contrib.auth.models import User
@@ -6,7 +6,7 @@ from django.contrib import auth
 from django.contrib.auth import decorators
 
 from . import forms
-
+from . import models
 """
 query orm
 
@@ -45,12 +45,54 @@ p.contact_set.create(           p.contact_set.creation_counter
 
 """
 
+# TODO
+# add a new contact
+# add phones to contact
 
 title = 'agenda'
 default_dict_to_render = {}
 default_dict_to_render['title'] = title
 
-# tenho que mostrar o telefone tmb
+
+@decorators.login_required(login_url='/agenda/login/')
+def edit_phone(request, phone_id):
+    page = 'agenda/ephone.html'
+    phone = get_object_or_404(models.Phone, pk=phone_id)
+    to_render = {'phone': phone}
+    
+    if request.method == 'POST':
+        form = forms.PhoneForm(request.POST)
+        if form.is_valid():
+            clean_phone = form.cleaned_data
+            phone.number = clean_phone['phone']
+            phone.save()
+            # return to detail page of the user
+            return redirect(reverse('agenda:detail', args=(phone.contact.id, )))
+        else:
+            to_render['form'] = form
+            to_render['msg'] = ':('
+    else:
+        form = forms.PhoneForm({'phone': phone.number})
+        to_render['form'] = form
+        
+    return render(request, page, to_render)
+    
+    
+
+@decorators.login_required(login_url='/agenda/login/')
+def contact_detail(request, contact_id):
+    page = 'agenda/detail.html'
+    contact = get_object_or_404(models.Contact, pk=contact_id)
+    tmp_lst = contact.phone_set.all()
+    to_render = {
+        'contact_name': contact.name
+      , 'lst_phones': tmp_lst
+      , 'title': request.user.username
+      , 'len': 1 if tmp_lst.count() < 2 else 2
+    }
+    return render(request, page, to_render)
+    
+    
 
 @decorators.login_required(login_url='/agenda/login/')
 def main(request):
@@ -145,5 +187,8 @@ def logout(request):
     if request.user.is_authenticated():
         auth.logout(request)
     return redirect(reverse('agenda:home'))
+
+
+    
 
 # Create your views here.

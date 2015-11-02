@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from . import utils
+from . import forms
 
 # rodar
 # python manage.py test agenda
@@ -14,7 +15,17 @@ class Test_home_page(TestCase):
         """
         response = self.client.get(reverse('agenda:home'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Ola forasteiro');
+        self.assertContains(response, 'Ola forasteiro')
+    
+    def test_main_page_with_no_user_authenticated(self):
+        """
+        If the user is not authenticated and try to get 'agenda:main' he is 
+        redirect to the login page
+        """
+        response = self.client.get(reverse('agenda:home'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "/agenda/login")
+        
     
     def test_home_send_a_query_string(self):
         """
@@ -82,4 +93,26 @@ class Test_home_page(TestCase):
           , ['<Contact: a1>', '<Contact: a2>', '<Contact: a3>']
           , ordered=False
         )
+
+class TestFormsValidation(TestCase):
+    
+    def test_with_valid_numbers(self):
+        form = forms.PhoneForm({'phone':'9990-1111'})
+        self.assertTrue(form.is_valid())
+        
+        form = forms.PhoneForm({'phone': '99999-3333'})
+        self.assertTrue(form.is_valid())
+    
+    def test_with_invalid_numbers(self):
+        form = forms.PhoneForm({'phone':'oooe-ffe13'})
+        self.assertFalse(form.is_valid())
+        
+        form = forms.PhoneForm({'phone':'1111-000f'})
+        self.assertFalse(form.is_valid())
+        
+        form = forms.PhoneForm({'phone':'1111-00000'})
+        self.assertFalse(form.is_valid())
+        
+        form = forms.PhoneForm({'phone':'99-00'})
+        self.assertFalse(form.is_valid())
         

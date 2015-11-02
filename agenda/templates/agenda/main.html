@@ -7,7 +7,7 @@
     <ul>
             <p>nome &nbsp &nbsp &nbsp &nbsp  phone</p>
         {% for c,p in contacts_phones_lst %}
-            <li>{{ c }} &nbsp|&nbsp 
+            <li><a href="{% url 'agenda:detail' c.id %}">{{ c }}</a> &nbsp|&nbsp 
                 {% if p %}
                     {{ p }}
                 {% endif %}

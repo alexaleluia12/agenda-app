@@ -1,0 +1,20 @@
+{% extends 'agenda/base.html' %}
+
+{% block content %}
+
+<div>
+    <p>{{ contact_name }}</p>
+    <p>Phone{{ len|pluralize }}</p>
+    <ul>
+        {% for p in lst_phones %}
+            <li>
+                {{ p }}
+                <a href="{% url 'agenda:phone' p.id %}">editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+    
+</div>
+
+{% endblock %}
+
