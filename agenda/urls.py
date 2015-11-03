@@ -17,7 +17,16 @@ urlpatterns = [
   , url(
         r'^(?P<phone_id>[0-9]+)/editphone/$'
       , views.edit_phone
-      , name='phone'
+      , name='ephone'
     )
-  ,
+  , url(
+        r'^(?P<contact_id>[0-9]+)/apendphone/$'
+      , views.add_phone
+      , name='aphone'
+    )
+  , url(
+        r'^(?P<contact_id>[0-9]+)/editcontact/$'
+      , views.edit_contact
+      , name='econtact'
+    )
 ]

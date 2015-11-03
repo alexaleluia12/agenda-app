@@ -3,7 +3,8 @@
 {% block footer %}
 <div>
     
-    <form action="{% url 'agenda:ephone' phone.id %}" method="POST">{% csrf_token %}
+    <p>{{ contact.name }}</p>
+    <form action="{% url 'agenda:aphone' contact.id %}" method="POST">{% csrf_token %}
       
       {{ form.as_p }}
         <p><input type="submit" value="Enviar &rarr;" /></p>

@@ -1,0 +1,12 @@
+{% extends 'agenda/base.html' %}
+
+{% block content %}
+<div>
+    {% if msg %}
+        <p>{{ msg }}</p>
+    {% endif %}
+    
+    {% block footer %}
+    {% endblock %}
+</div>
+{% endblock %}

@@ -46,13 +46,56 @@ p.contact_set.create(           p.contact_set.creation_counter
 """
 
 # TODO
-# add a new contact
-# add phones to contact
+# add a new contact == (comecar neste)
 
 title = 'agenda'
 default_dict_to_render = {}
 default_dict_to_render['title'] = title
 
+# edit contact will allow change the exist name
+@decorators.login_required(login_url='/agenda/login/')
+def edit_contact(request, contact_id):
+    page = 'agenda/econtact.html'
+    contact = get_object_or_404(models.Contact, pk=contact_id)
+    to_render = {'contact': contact, 'title': request.user.username}
+    
+    if request.method == 'POST':
+        form = forms.ContactForm(request.POST)
+        if form.is_valid():
+            clean_form = form.cleaned_data
+            contact.name = clean_form['name']
+            contact.save()
+            return redirect(reverse('agenda:main'))
+        else:
+            to_render['msg'] = ':('
+            to_render['form'] = form
+    else:
+        form = forms.ContactForm({'name': contact.name})
+        to_render['form'] = form
+    
+    return render(request, page, to_render)
+
+# to add a phone i need to know the id of the contact
+@decorators.login_required(login_url='/agenda/login/')
+def add_phone(request, contact_id):
+    page = 'agenda/aphone.html'
+    contact = get_object_or_404(models.Contact, pk=contact_id)
+    to_render = {'contact': contact, 'title': request.user.username}
+    
+    if request.method == 'POST':
+        form = forms.PhoneForm(request.POST)
+        if form.is_valid():
+            clean_form = form.cleaned_data
+            contact.phone_set.create(number=clean_form['phone'])
+            return redirect(reverse('agenda:detail', args=(contact_id, )))
+        else:
+            to_render['msg'] = ':('
+            to_render['form'] = form
+    else:
+        form = forms.PhoneForm({'phone':'9999-9999'})
+        to_render['form'] = form
+    
+    return render(request, page, to_render)
 
 @decorators.login_required(login_url='/agenda/login/')
 def edit_phone(request, phone_id):
@@ -76,8 +119,6 @@ def edit_phone(request, phone_id):
         to_render['form'] = form
         
     return render(request, page, to_render)
-    
-    
 
 @decorators.login_required(login_url='/agenda/login/')
 def contact_detail(request, contact_id):
@@ -85,7 +126,7 @@ def contact_detail(request, contact_id):
     contact = get_object_or_404(models.Contact, pk=contact_id)
     tmp_lst = contact.phone_set.all()
     to_render = {
-        'contact_name': contact.name
+        'contact': contact
       , 'lst_phones': tmp_lst
       , 'title': request.user.username
       , 'len': 1 if tmp_lst.count() < 2 else 2
@@ -187,8 +228,3 @@ def logout(request):
     if request.user.is_authenticated():
         auth.logout(request)
     return redirect(reverse('agenda:home'))
-
-
-    
-
-# Create your views here.
