@@ -115,4 +115,24 @@ class TestFormsValidation(TestCase):
         
         form = forms.PhoneForm({'phone':'99-00'})
         self.assertFalse(form.is_valid())
-        
+
+# this form NewContactForm unit Contact and Phone
+class TestNewContactForm(TestCase):
+    
+    def test_with_valid_data(self):
+        form = forms.NewContactForm(
+            {'name':'alex', 'phone':'1234-4522'}
+        )
+        self.assertTrue(form.is_valid())
+    
+    def test_with_invalid_name(self):
+        form = forms.NewContactForm(
+            {'name': '', 'phone': '8273-2323'}
+        )
+        self.assertFalse(form.is_valid())
+    
+    def test_with_invalid_phone(self):
+        form = forms.NewContactForm(
+            {'name': 'alex', 'phone': '8273-2323'}
+        )
+        self.assertFalse(form.is_valid())

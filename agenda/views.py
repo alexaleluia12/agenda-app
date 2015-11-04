@@ -46,11 +46,37 @@ p.contact_set.create(           p.contact_set.creation_counter
 """
 
 # TODO
-# add a new contact == (comecar neste)
+# exclude an user ( ask first)
+# exclude an phone (exclude directle)
 
 title = 'agenda'
 default_dict_to_render = {}
 default_dict_to_render['title'] = title
+
+# add a contact the user can also add a phone
+@decorators.login_required(login_url='/agenda/login/')
+def add_contact(request):
+    page = 'agenda/acontact.html'
+    to_render = {'title':request.user.username}
+    
+    if request.method == 'POST':
+        form = forms.NewContactForm(request.POST)
+        if form.is_valid():
+            clean_form = form.cleaned_data
+            usr = request.user
+            contact = usr.contact_set.create(name=clean_form['name'])
+            contact.phone_set.create(number=clean_form['phone'])
+            return redirect(reverse('agenda:main'))
+        
+        else:
+            to_render['msg'] = ':('
+            to_render['form'] = form
+    else:
+        form = forms.NewContactForm()
+        to_render['form'] = form
+    
+    return render(request, page, to_render)
+
 
 # edit contact will allow change the exist name
 @decorators.login_required(login_url='/agenda/login/')
@@ -159,6 +185,7 @@ def home(request):
         return redirect(reverse('agenda:main'))
     return render(request, 'agenda/index.html', default_dict_to_render)
 
+# refatorar esse methodo
 def sign(request):
     page = 'agenda/sign.html'
     dict_render = {}
@@ -189,10 +216,10 @@ def sign(request):
                 # vao buscar o mesmo padrao q eh myapp/
                 
         else:
-            to_render = render(request, page, {'form': form})
+            to_render = render(request, page, {'form': form, 'title':'agenda'})
     else:
         form = forms.LoginForm()
-        to_render = render(request, page, {'form': form})
+        to_render = render(request, page, {'form': form, 'title':'agenda'})
     
     return to_render
 
