@@ -133,6 +133,6 @@ class TestNewContactForm(TestCase):
     
     def test_with_invalid_phone(self):
         form = forms.NewContactForm(
-            {'name': 'alex', 'phone': '8273-2323'}
+            {'name': 'alex', 'phone': '8273-23234'}
         )
         self.assertFalse(form.is_valid())
