@@ -30,4 +30,9 @@ urlpatterns = [
       , views.edit_contact
       , name='econtact'
     )
+  , url(
+        r'^(?P<phone_id>[0-9]+)/deletephone/$'
+      , views.delete_phone
+      , name='dphone'
+    )
 ]

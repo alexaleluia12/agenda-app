@@ -46,12 +46,14 @@ p.contact_set.create(           p.contact_set.creation_counter
 """
 
 # TODO
-# exclude an user ( ask first)
-# exclude an phone (exclude directle)
+# exclude an user ( ask first) ==
+# 
 
 title = 'agenda'
 default_dict_to_render = {}
 default_dict_to_render['title'] = title
+
+
 
 # add a contact the user can also add a phone
 @decorators.login_required(login_url='/agenda/login/')
@@ -101,6 +103,7 @@ def edit_contact(request, contact_id):
     
     return render(request, page, to_render)
 
+
 # to add a phone i need to know the id of the contact
 @decorators.login_required(login_url='/agenda/login/')
 def add_phone(request, contact_id):
@@ -122,6 +125,15 @@ def add_phone(request, contact_id):
         to_render['form'] = form
     
     return render(request, page, to_render)
+
+
+@decorators.login_required(login_url='/agenda/login/')
+def delete_phone(request, phone_id):
+    phone = get_object_or_404(models.Phone, pk=phone_id)
+    user_id = phone.contact.id
+    phone.delete()
+    return redirect(reverse('agenda:detail', args=(user_id, )))
+
 
 @decorators.login_required(login_url='/agenda/login/')
 def edit_phone(request, phone_id):
@@ -146,6 +158,7 @@ def edit_phone(request, phone_id):
         
     return render(request, page, to_render)
 
+
 @decorators.login_required(login_url='/agenda/login/')
 def contact_detail(request, contact_id):
     page = 'agenda/detail.html'
@@ -158,8 +171,7 @@ def contact_detail(request, contact_id):
       , 'len': 1 if tmp_lst.count() < 2 else 2
     }
     return render(request, page, to_render)
-    
-    
+
 
 @decorators.login_required(login_url='/agenda/login/')
 def main(request):
@@ -184,6 +196,7 @@ def home(request):
     if request.user.is_authenticated():
         return redirect(reverse('agenda:main'))
     return render(request, 'agenda/index.html', default_dict_to_render)
+
 
 # refatorar esse methodo
 def sign(request):
@@ -223,6 +236,7 @@ def sign(request):
     
     return to_render
 
+
 def login(request):
     page = 'agenda/login.html'
     dict_render = {}
@@ -251,7 +265,10 @@ def login(request):
     
     return to_render
 
+
 def logout(request):
     if request.user.is_authenticated():
         auth.logout(request)
     return redirect(reverse('agenda:home'))
+
+

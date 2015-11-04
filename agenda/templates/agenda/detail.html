@@ -12,6 +12,7 @@
             <li>
                 {{ p }}
                 <a href="{% url 'agenda:ephone' p.id %}">editar</a>
+                <a href="{% url 'agenda:dphone' p.id %}">excluir</a>
             </li>
         {% endfor %}
     </ul>
