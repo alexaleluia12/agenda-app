@@ -10,7 +10,6 @@ class BasicEnvironment:
     """
     Give an user logged
     """
-    
     def __init__(self, callback_login):
         user_name = 'pedro'
         password = '987654321'

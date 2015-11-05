@@ -11,7 +11,7 @@
     <p>Phone{{ len|pluralize }}</p>
     <a href="{% url 'agenda:aphone' contact.id %}">adicionar</a>
     <ul>
-        {% for p in lst_phones %}
+        {% for p in phones_lst %}
             <li>
                 {{ p }}
                 <a href="{% url 'agenda:ephone' p.id %}">editar</a>

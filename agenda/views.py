@@ -7,43 +7,10 @@ from django.contrib.auth import decorators
 
 from . import forms
 from . import models
-"""
-query orm
 
->>> p = User.objects.get(username="pedro")
->>> p
-<User: pedro>
->>> p.username
-'pedro'
->>> p.user
-p.user_permissions(  p.username
->>> p.contact_set.all()
-[<Contact: hulke>]
->>> p.contact_set.creat
-p.contact_set.create(           p.contact_set.creation_counter
->>> p.contact_set.create(name="pano azul")
-<Contact: pano azul>
->>> p.contact_set.all()
-[<Contact: hulke>, <Contact: pano azul>]
->>> c = p.contact_set.create(name="teclado")
->>> c
-<Contact: teclado>
->>> c.phone_set.all()
 
-==
->>> p = User.objects.all()[1]
->>> p
-<User: pedro>
->>> p.contact_set.all()
-[<Contact: hulke>, <Contact: pano azul>, <Contact: teclado>]
->>> p.contact_set.first()
->>> p.contact_set.first().phone_set.all()
-[<Phone: 4444-4444>, <Phone: 5555-5555>]
->>> p.contact_set.first().phone_set.first()
-<Phone: 4444-4444>
->>> 
+# TODO
 
-"""
 
 title = 'agenda'
 default_dict_to_render = {}
@@ -179,7 +146,7 @@ def contact_detail(request, contact_id):
     tmp_lst = contact.phone_set.all()
     to_render = {
         'contact': contact
-      , 'lst_phones': tmp_lst
+      , 'phones_lst': tmp_lst
       , 'title': request.user.username
       , 'len': 1 if tmp_lst.count() < 2 else 2
     }
@@ -194,7 +161,7 @@ def main(request):
        i.phone_set.first() if i.phone_set.first() else '#'
        for i in request.user.contact_set.order_by('name')
     ]
-    dict_render = {
+    to_render = {
         'len': len(contacts_lst)
       , 'title': request.user.username
       , 'contacts_phones_lst': zip(contacts_lst, phones_lst)
@@ -203,7 +170,7 @@ def main(request):
     }
     
     
-    return render(request, page, dict_render)
+    return render(request, page, to_render)
 
 
 def home(request):
@@ -215,8 +182,8 @@ def home(request):
 # refatorar esse methodo
 def sign(request):
     page = 'agenda/sign.html'
-    dict_render = {}
-    to_render = None
+    to_render = {'title': title}
+    
     
     if request.method == 'POST':
         form = forms.LoginForm(request.POST)
@@ -226,58 +193,57 @@ def sign(request):
                 # this name alread exist
                 msg = 'this name alreda exist, choice another'
                 form = forms.LoginForm()
-                to_render = render(request, page, 
-                    {'form': form, 'msg': msg}
-                )
+                to_render['form'] = form
+                to_render['msg'] = msg
             else: ## sucess
                 User.objects.create_user(
-                    username=clean_form['name'],
-                    password=clean_form['password']
+                    username=clean_form['name']
+                  , password=clean_form['password']
                 )
                 return redirect(reverse('agenda:home') + '?msg=user successfully created')
-                # passando query string para uma url
-                # nota que eu nao preciso mecher no url.py
-                # pois
                 # http://www.example.com/myapp/
                 # http://www.example.com/myapp/?page=3
-                # vao buscar o mesmo padrao q eh myapp/
-                
-        else:
-            to_render = render(request, page, {'form': form, 'title':'agenda'})
-    else:
-        form = forms.LoginForm()
-        to_render = render(request, page, {'form': form, 'title':'agenda'})
+                # use the same url pattern myapp/
+        
+        else: # invalid form
+            to_render['form'] = form
+            to_render['msg'] = ':( Form invalid'
     
-    return to_render
+    else: # GET method
+        form = forms.LoginForm()
+        to_render['form'] = form
+    
+    return render(request, page, to_render)
 
 
 def login(request):
     page = 'agenda/login.html'
-    dict_render = {}
-    to_render = None
+    to_render = {'title': title}
     
     if request.method == 'POST' :
         form = forms.LoginForm(request.POST)
         if form.is_valid():
             clean_form = form.cleaned_data
-            user = auth.authenticate(username=clean_form['name'], 
-                                     password=clean_form['password'])
+            user = auth.authenticate(
+                username=clean_form['name']
+              , password=clean_form['password']
+            )
             if user:
                 auth.login(request, user)
                 return redirect(reverse('agenda:main'))
             else:
-                to_render = render(request, page,
-                    {  'form': forms.LoginForm()
-                     , 'msg' : 'Usuario ou senha invalidos'
-                    }
-                )
-        else:
-            to_render = render(request, page, {'form': form})
-    else:
-        form = forms.LoginForm()
-        to_render = render(request, page,  {'form': form})
+                to_render['form'] = form
+                to_render['msg'] = 'User or password invalid'
+        
+        else: # invalid form
+            to_render['form'] = form
+            to_render['msg'] = ':( Invalid form'
     
-    return to_render
+    else: # GET method
+        form = forms.LoginForm()
+        to_render['form'] = form
+    
+    return render(request, page, to_render)
 
 
 def logout(request):
