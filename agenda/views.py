@@ -188,10 +188,11 @@ def contact_detail(request, contact_id):
 
 @decorators.login_required(login_url='/agenda/login/')
 def main(request):
-    contacts_lst = request.user.contact_set.all()
+    page = 'agenda/main.html'
+    contacts_lst = request.user.contact_set.order_by('name')
     phones_lst = [
        i.phone_set.first() if i.phone_set.first() else '#'
-       for i in request.user.contact_set.all()
+       for i in request.user.contact_set.order_by('name')
     ]
     dict_render = {
         'len': len(contacts_lst)
@@ -200,7 +201,7 @@ def main(request):
       , 'contacts_lst': contacts_lst
       , 'phones_lst': phones_lst
     }
-    page = 'agenda/main.html'
+    
     
     return render(request, page, dict_render)
 

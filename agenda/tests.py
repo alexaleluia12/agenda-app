@@ -8,7 +8,70 @@ from . import forms
 # python manage.py test agenda
 
 # TODO
-#   teste para adicionar phone
+
+
+
+class TestAddContact(TestCase):
+    
+    def test_with_no_contact(self):
+        env = utils.BasicEnvironment(self.client.login)
+        
+        response = self.client.get(reverse('agenda:main'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Contact')
+        self.assertQuerysetEqual(response.context['contacts_lst'], [])
+    
+    def test_with_two_contacts(self):
+        env = utils.BasicEnvironment(self.client.login)
+        contact1 = utils.create_contact(env.user, 'lion')
+        contact2 = utils.create_contact(env.user, 'elephant')
+        
+        response = self.client.get(reverse('agenda:main'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Contacts')
+        self.assertQuerysetEqual(
+            response.context['contacts_lst']
+          , ['<Contact: elephant>', '<Contact: lion>']
+        )
+        
+class TestDeleteContact(TestCase):
+    
+    def test_remove_one_of_three_contacts(self):
+        env = utils.BasicEnvironment(self.client.login)
+        contact1 = utils.create_contact(env.user, 'blue')
+        contact2 = utils.create_contact(env.user, 'pink')
+        contact3 = utils.create_contact(env.user, 'green')
+        
+        response = self.client.get(
+            reverse('agenda:confdeluser', args=(contact2.id, ))
+          , follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(
+            response.context['contacts_lst']
+          , ['<Contact: blue>', '<Contact: green>']
+        )
+
+class TestEditContact(TestCase):
+    
+    def test_edit_a_contact(self):
+        env = utils.BasicEnvironment(self.client.login)
+        contact = utils.create_contact(env.user, 'alex')
+        
+        response = self.client.get(reverse('agenda:main'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(
+            response.context['contacts_lst'], ['<Contact: alex>']
+        )
+        
+        contact.name = 'dennis'
+        contact.save()
+        
+        response = self.client.get(reverse('agenda:main'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(
+            response.context['contacts_lst'], ['<Contact: dennis>']
+        )
 
 class TestAddPhone(TestCase):
     
