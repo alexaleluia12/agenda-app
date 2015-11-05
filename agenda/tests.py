@@ -9,11 +9,38 @@ from . import forms
 
 # TODO
 
+class TestContactPhone(TestCase):
+    
+    def test_integration(self):
+        """
+        Each contact gets his own phone
+        """
+        env = utils.BasicEnvironment(self.client.login)
+        contact1 = utils.create_contact(env.user, 'auido')
+        contact2 = utils.create_contact(env.user, 'dam')
+        contact3 = utils.create_contact(env.user, 'linus')
+        
+        contact1.phone_set.create(number='9832-3384')
+        contact2.phone_set.create(number='8478-4383')
+        
+        response = self.client.get(reverse('agenda:main'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(
+            response.context['contacts_lst']
+          , ['<Contact: auido>', '<Contact: dam>', '<Contact: linus>']
+        )
+        self.assertQuerysetEqual(
+            response.context['phones_lst']
+          , ['<Phone: 9832-3384>', '<Phone: 8478-4383>', "'#'"]
+        )
 
 
 class TestAddContact(TestCase):
     
     def test_with_no_contact(self):
+        """
+        With no contact the 'contacts_lst' should be empty
+        """
         env = utils.BasicEnvironment(self.client.login)
         
         response = self.client.get(reverse('agenda:main'), follow=True)
@@ -22,6 +49,9 @@ class TestAddContact(TestCase):
         self.assertQuerysetEqual(response.context['contacts_lst'], [])
     
     def test_with_two_contacts(self):
+        """
+        If a contact is added is in shown on main page
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact1 = utils.create_contact(env.user, 'lion')
         contact2 = utils.create_contact(env.user, 'elephant')
@@ -37,11 +67,15 @@ class TestAddContact(TestCase):
 class TestDeleteContact(TestCase):
     
     def test_remove_one_of_three_contacts(self):
+        """
+        If a contact is deleted it is not shown
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact1 = utils.create_contact(env.user, 'blue')
         contact2 = utils.create_contact(env.user, 'pink')
         contact3 = utils.create_contact(env.user, 'green')
         
+        # after deletion the user is redirect to main page
         response = self.client.get(
             reverse('agenda:confdeluser', args=(contact2.id, ))
           , follow=True
@@ -55,6 +89,9 @@ class TestDeleteContact(TestCase):
 class TestEditContact(TestCase):
     
     def test_edit_a_contact(self):
+        """
+        If contact's name change the name on context change too
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'alex')
         
@@ -76,6 +113,9 @@ class TestEditContact(TestCase):
 class TestAddPhone(TestCase):
     
     def test_with_no_phone(self):
+        """
+        If there is no phone the 'phones_lst' should be empty
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'aj')
         
@@ -86,10 +126,13 @@ class TestAddPhone(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(
-            response.context['lst_phones'], []
+            response.context['phones_lst'], []
         )
     
     def test_add_a_phone(self):
+        """
+        If a phone is added to a contact it is shown
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'a1')
         contact.phone_set.create(number='9828-9382')
@@ -102,12 +145,15 @@ class TestAddPhone(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'a1')
         self.assertQuerysetEqual(
-            response.context['lst_phones']
+            response.context['phones_lst']
           , ['<Phone: 9828-9382>']
         )
         
     
     def test_add_three_phones(self):
+        """
+        If three phones are added to a contact they are shown
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'buy')
         
@@ -122,7 +168,7 @@ class TestAddPhone(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'buy')
         self.assertQuerysetEqual(
-            response.context['lst_phones']
+            response.context['phones_lst']
           , [   '<Phone: 9374-3492>'
                , '<Phone: 3847-3948>'
                , '<Phone: 3878-40593>'
@@ -133,6 +179,9 @@ class TestAddPhone(TestCase):
 class TestDeltePhone(TestCase):
     
     def test_remove_all_phones(self):
+        """
+        If all contact's phones are deleted 'phones_lst' should be empty
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'pencil')
         
@@ -155,9 +204,12 @@ class TestDeltePhone(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         
-        self.assertQuerysetEqual(response.context['lst_phones'], [])
+        self.assertQuerysetEqual(response.context['phones_lst'], [])
     
-    def test_revemo_a_phone_that_no_exist(self):
+    def test_remove_a_phone_that_no_exist(self):
+        """
+        If try to delete a phone that does not exist 404 is raised
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'mouse')
         
@@ -170,6 +222,9 @@ class TestDeltePhone(TestCase):
 class TestEditPhone(TestCase):
     
     def test_edit_phone(self):
+        """
+        If a phone number change the value on 'phones_lst' change too
+        """
         env = utils.BasicEnvironment(self.client.login)
         contact = utils.create_contact(env.user, 'pencil')
         
@@ -185,7 +240,7 @@ class TestEditPhone(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(
-            response.context['lst_phones']
+            response.context['phones_lst']
           , [    '<Phone: 9374-3492>'
                , '<Phone: 3847-3948>'
                , '<Phone: 90902-9090>'
@@ -279,7 +334,6 @@ class TestPhoneForm(TestCase):
         """
         A Form Phone with a valid number should be valid
         """
-        
         form = forms.PhoneForm({'phone':'9990-1111'})
         self.assertTrue(form.is_valid())
         
@@ -290,7 +344,6 @@ class TestPhoneForm(TestCase):
         """
         A Form Phone with a invalid number should be invalid
         """
-        
         form = forms.PhoneForm({'phone':'oooe-ffe13'})
         self.assertFalse(form.is_valid())
         
@@ -310,7 +363,6 @@ class TestNewContactForm(TestCase):
         """
         With name and phone valid the from should be valid
         """
-        
         form = forms.NewContactForm(
             {'name':'alex', 'phone':'1234-4522'}
         )
@@ -320,7 +372,6 @@ class TestNewContactForm(TestCase):
         """
         With name invalid and phone valid the form should be invalid
         """
-        
         form = forms.NewContactForm(
             {'name': '', 'phone': '8273-2323'}
         )
@@ -330,7 +381,6 @@ class TestNewContactForm(TestCase):
         """
         With name valid and phone invalid the form should be invalid
         """
-        
         form = forms.NewContactForm(
             {'name': 'alex', 'phone': '8273-23234'}
         )
