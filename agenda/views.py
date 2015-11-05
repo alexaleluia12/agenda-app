@@ -45,15 +45,28 @@ p.contact_set.create(           p.contact_set.creation_counter
 
 """
 
-# TODO
-# exclude an user ( ask first) ==
-# 
-
 title = 'agenda'
 default_dict_to_render = {}
 default_dict_to_render['title'] = title
 
 
+@decorators.login_required(login_url='/agenda/login/')
+def delete_contact(request, contact_id):
+    page = 'agenda/dcontact.html'
+    contact = get_object_or_404(models.Contact, pk=contact_id)
+    to_render = {
+        'title':request.user.username
+      , 'contact': contact
+    }
+    
+    return render(request, page, to_render)
+
+@decorators.login_required(login_url='/agenda/login/')
+def delete_contact_confirmed(request, contact_id):
+    contact = get_object_or_404(models.Contact, pk=contact_id)
+    contact.delete()
+    
+    return redirect(reverse('agenda:main'))
 
 # add a contact the user can also add a phone
 @decorators.login_required(login_url='/agenda/login/')

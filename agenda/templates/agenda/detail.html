@@ -3,7 +3,10 @@
 {% block content %}
 
 <div>
-    <p>{{ contact.name }}<a href="{% url 'agenda:econtact' contact.id %}"> editar</a></p>
+    <p>{{ contact.name }}
+        <a href="{% url 'agenda:econtact' contact.id %}"> editar</a>
+        <a href="{% url 'agenda:dcontact' contact.id %}">excluir</a>
+    </p>
     
     <p>Phone{{ len|pluralize }}</p>
     <a href="{% url 'agenda:aphone' contact.id %}">adicionar</a>

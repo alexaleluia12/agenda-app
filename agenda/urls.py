@@ -35,4 +35,14 @@ urlpatterns = [
       , views.delete_phone
       , name='dphone'
     )
+  , url(
+        r'^(?P<contact_id>[0-9]+)/deletecontact/$'
+      , views.delete_contact
+      , name='dcontact'
+    )
+  , url(
+        r'^(?P<contact_id>[0-9]+)/cfdelcontact/$'
+      , views.delete_contact_confirmed
+      , name='confdeluser'
+    )
 ]
