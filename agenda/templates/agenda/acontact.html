@@ -9,7 +9,7 @@
     <form action="{% url 'agenda:acontact' %}" method="POST">{% csrf_token %}
       
       {{ form.as_p }}
-      <p><input type="submit" value="Continue &rarr;" /></p>
+      <p><input type="submit" value="Send &rarr;" /></p>
     </form>
 </div>
 {% endblock %}

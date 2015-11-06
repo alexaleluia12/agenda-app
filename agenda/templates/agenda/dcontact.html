@@ -2,8 +2,8 @@
 
 {% block content %}
 <div>
-    <p>do you realy want to delte the user {{ contact.name }}</p>
+    <p>Do you realy want to delete the user {{ contact.name }} ?</p>
     <a href="{% url 'agenda:confdeluser' contact.id %}">confirm</a>
-    <a href="{% url 'agenda:main' %}">concel</a>
+    <a href="{% url 'agenda:main' %}">cancel</a>
 </div>
 {% endblock %}

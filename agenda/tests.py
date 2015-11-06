@@ -257,22 +257,24 @@ class TestHomePage(TestCase):
         """
         response = self.client.get(reverse('agenda:home'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Ola forasteiro')
+        self.assertContains(response, 'Hello foreigner')
         self.assertContains(response, "/agenda/login")
         self.assertContains(response, "/agenda/sign")
     
     def test_home_send_a_query_string(self):
         """
-        If a query string msg is send in home it is shown
+        If a query string msg is send in home it is shown and default message
+        is hidden
         """
         response = self.client.get(reverse('agenda:home') + '?msg=test work')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test work')
+        self.assertNotContains(response, 'Hello foreigner')
     
     def test_with_authenticated_user_simple_page(self):
         """
         If the user is authenticated is redirect to the main page 
-        get his name on title and have no contacts
+        get his name on title for now it has no contacts
         """
         user_name = 'pedro'
         password = '987654321'

@@ -4,17 +4,16 @@
 <div>
     
     
-    {% if not user.is_authenticated %}
-    <p>Ola forasteiro</p>
-    {% endif %}
+    
     {% if request.GET.msg %}
-        <p>{{ request.GET.msg }}</p><!--pegar query string na template-->
+        <p>{{ request.GET.msg }}</p><!--take query string on template-->
+    {% else %}
+        <p>Hello foreigner</p>
     {% endif %}
     <a href="{% url 'agenda:login' %}">login</a>
     <a href="{% url 'agenda:sign' %}">sign</a>
     <!--
-        caso eu queira passa uma query string por dentro
-        na url
+        If I want to pass a query string with the url
         {# <a href="{% url my_videos %}?filter=others&sort=newest">My Videos</a>#}
     -->
     

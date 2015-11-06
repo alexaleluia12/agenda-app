@@ -6,7 +6,7 @@
     <p>Contact{{ len|pluralize }}</p>
     <a href="{% url 'agenda:acontact' %}">add new contact</a>
     <ul>
-            <p>nome &nbsp &nbsp &nbsp &nbsp  phone</p>
+            <p>name &nbsp &nbsp &nbsp &nbsp  phone</p>
         {% for c,p in contacts_phones_lst %}
             <li><a href="{% url 'agenda:detail' c.id %}">{{ c }}</a> &nbsp|&nbsp 
                 {% if p %}

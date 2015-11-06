@@ -4,18 +4,18 @@
 
 <div>
     <p>{{ contact.name }}
-        <a href="{% url 'agenda:econtact' contact.id %}"> editar</a>
-        <a href="{% url 'agenda:dcontact' contact.id %}">excluir</a>
+        <a href="{% url 'agenda:econtact' contact.id %}">edit</a>
+        <a href="{% url 'agenda:dcontact' contact.id %}">delete</a>
     </p>
     
     <p>Phone{{ len|pluralize }}</p>
-    <a href="{% url 'agenda:aphone' contact.id %}">adicionar</a>
+    <a href="{% url 'agenda:aphone' contact.id %}">append</a>
     <ul>
         {% for p in phones_lst %}
             <li>
                 {{ p }}
-                <a href="{% url 'agenda:ephone' p.id %}">editar</a>
-                <a href="{% url 'agenda:dphone' p.id %}">excluir</a>
+                <a href="{% url 'agenda:ephone' p.id %}">edit</a>
+                <a href="{% url 'agenda:dphone' p.id %}">delete</a>
             </li>
         {% endfor %}
     </ul>
