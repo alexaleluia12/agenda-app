@@ -162,13 +162,12 @@ def main(request):
        for i in request.user.contact_set.order_by('name')
     ]
     to_render = {
-        'len': len(contacts_lst)
+        'len': 2 if len(contacts_lst) else 1
       , 'title': request.user.username
       , 'contacts_phones_lst': zip(contacts_lst, phones_lst)
       , 'contacts_lst': contacts_lst
       , 'phones_lst': phones_lst
     }
-    
     
     return render(request, page, to_render)
 
@@ -191,7 +190,7 @@ def sign(request):
             clean_form = form.cleaned_data
             if User.objects.filter(username=clean_form['name']):
                 # this name alread exist
-                msg = 'this name alreda exist, choice another'
+                msg = 'this name already exist, choice another'
                 form = forms.LoginForm()
                 to_render['form'] = form
                 to_render['msg'] = msg
