@@ -40,3 +40,23 @@ deactive
 
 # cancel server: Ctrl + c
 ```
+
+--
+Selenium
+
+It use Selenium to test the app on browser.
+
+To run the view test You need Firefox and [Selenium Server](http://docs.seleniumhq.org/download/)
+
+```sh
+# run the selenium server
+java -jar selenium-server-standalone-2***.jar
+
+# run the django sever
+make run
+
+# run the tests
+cd agenda
+PYTHONPATH=.. python test-view.py
+
+```
