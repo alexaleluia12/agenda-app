@@ -15,7 +15,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 # run ($ in this directory)
-# PYTHONPATH=.. python test-view.py
+# $ PYTHONPATH=.. python test-view.py
 
 
 url = 'http://127.0.0.1:8000'
@@ -27,13 +27,18 @@ gb = None
 
 class Browser:
     def __init__(self):
+        self.driver = None
+    
+    def __enter__(self):
         self.driver = webdriver.Firefox()
     
-    def end(self):
+    def __exit__(self, ex_type, ex_val, tb):
         self.driver.close()
+        
+        # propagate the exeception if it happen
+        return ex_type is not None
 
-# consider all the pages are in the rigth palce
-
+# assume all the pages are in the rigth place
 def login_user(obj):
     
     name = obj.driver.find_element_by_name('name')
@@ -195,7 +200,5 @@ class TestPhone(TestCase):
 
 if __name__ == '__main__':
     gb = Browser()
-    unittest.main()
-    gb.end()
-
-
+    with gb:
+        unittest.main()
